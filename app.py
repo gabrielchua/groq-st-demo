@@ -26,18 +26,6 @@ if API_KEY is None:
 
 client = Groq(api_key=API_KEY)
 
-def groq_chat(model, 
-              user_prompt, 
-              system_prompt="You are a world-class problem solver with an IQ of 200."):
-    """Generate a chat completion using the Groq API."""
-    response = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}],
-    )
-    return response.choices[0].message.content
-
-
 st.set_page_config(page_title="Groq Demo", page_icon="⚡️", layout="wide")
 
 st.title("Groq Demo")
@@ -80,8 +68,8 @@ with tab1:
 with tab2:
     st.info("""['Self-Discover: Large Language Models Self-Compose Reasoning Structures'](https://arxiv.org/abs/2402.03620) - Zhou et al (2024)
     
-This is based on MrCatID's [implementation](https://github.com/catid/self-discover/blob/main/self_discover.py). 
-Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singapore](https://www.meetup.com/machine-learning-singapore/)
+    This is based on MrCatID's [implementation](https://github.com/catid/self-discover/blob/main/self_discover.py). 
+    Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singapore](https://www.meetup.com/machine-learning-singapore/)
     """)
     task = st.text_input("What is your task?")
     reasoning_model = st.radio("Select your LLM for this reasoning task", model_list, horizontal=True, help="mixtral is recommended for better performance, but appears to be slower")
@@ -92,19 +80,64 @@ Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singa
     step1 = st.empty()
 
     if st.button("Run"):
+
         prompt = select_reasoning_modules(REASONING_MODULES, task)
-        select_reasoning_modules = groq_chat(reasoning_model, prompt)
-        st.subheader("")
-        step1.info("# Step 1: SELECT relevant reasoning modules for the task \n \n"+select_reasoning_modules)
+        select_reasoning_modules = ""
+        stream_1 = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
+                    {"role": "user", "content": prompt}],
+            stream=True
+        )
+        
+        for chunk in stream_1:
+            chunk_content = chunk.choices[0].delta.content
+            if chunk_content is not None:
+                select_reasoning_modules = select_reasoning_modules + chunk_content
+                step1.info("# Step 1: SELECT relevant reasoning modules for the task \n \n"+select_reasoning_modules)
+        
 
         prompt = adapt_reasoning_modules(select_reasoning_modules, task)
-        adapted_modules = groq_chat(reasoning_model, prompt)
-        step2.info("# Step 2: ADAPT the selected reasoning modules to be more specific to the task. \n \n " + adapted_modules)
+        stream_2 = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
+                    {"role": "user", "content": prompt}],
+            stream=True
+        )
+
+        adapted_modules = ""
+        for chunk in stream_2:
+            chunk_content = chunk.choices[0].delta.content
+            if chunk_content is not None:
+                adapted_modules = adapted_modules + chunk_content
+                step2.info("# Step 2: ADAPT the selected reasoning modules to be more specific to the task. \n \n " + adapted_modules)
 
         prompt = implement_reasoning_structure(adapted_modules, task)
-        reasoning_structure = groq_chat(reasoning_model, prompt)
-        step3.info("# Step 3: IMPLEMENT the adapted reasoning modules into an actionable reasoning structure. \n \n " + reasoning_structure)
-        
+        stream_3 = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
+                    {"role": "user", "content": prompt}],
+            stream=True
+        )
+
+        reasoning_structure = ""
+        for chunk in stream_3:
+            chunk_content = chunk.choices[0].delta.content
+            if chunk_content is not None:
+                reasoning_structure = reasoning_structure + chunk_content
+                step3.info("# Step 3: IMPLEMENT the adapted reasoning modules into an actionable reasoning structure. \n \n " + reasoning_structure)
+
         prompt = execute_reasoning_structure(reasoning_structure, task)
-        result = groq_chat(reasoning_model, prompt)
-        step4.info("# Step 4: Execute the reasoning structure to solve a specific task instance. \n \n " + result)
+        stream_4 = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
+                    {"role": "user", "content": prompt}],
+            stream=True
+        )
+
+        result = ""
+        for chunk in stream_4:
+            chunk_content = chunk.choices[0].delta.content
+            if chunk_content is not None:
+                result = result + chunk_content
+                step4.info("# Step 4: Execute the reasoning structure to solve a specific task instance. \n \n " + result)
