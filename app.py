@@ -86,27 +86,25 @@ with tab2:
     task = st.text_input("What is your task?")
     reasoning_model = st.radio("Select your LLM for this reasoning task", model_list, horizontal=True, help="mixtral is recommended for better performance, but appears to be slower")
 
+    step4 = st.empty()
+    step3 = st.empty() 
+    step2 = st.empty()
+    step1 = st.empty()
+
     if st.button("Run"):
         prompt = select_reasoning_modules(REASONING_MODULES, task)
         select_reasoning_modules = groq_chat(reasoning_model, prompt)
-        st.subheader("Step 1: SELECT relevant reasoning modules for the task")
-        with st.expander("See the reasoning modules"):
-            st.info(select_reasoning_modules)
+        st.subheader("")
+        step1.info("# Step 1: SELECT relevant reasoning modules for the task \n \n"+select_reasoning_modules)
 
         prompt = adapt_reasoning_modules(select_reasoning_modules, task)
         adapted_modules = groq_chat(reasoning_model, prompt)
-        st.subheader("Step 2: ADAPT the selected reasoning modules to be more specific to the task.")
-        with st.expander("See the adapted reasoning modules"):
-            st.info(adapted_modules)
+        step2.info("# Step 2: ADAPT the selected reasoning modules to be more specific to the task. \n \n " + adapted_modules)
 
         prompt = implement_reasoning_structure(adapted_modules, task)
         reasoning_structure = groq_chat(reasoning_model, prompt)
-        st.subheader("Step 3: IMPLEMENT the adapted reasoning modules into an actionable reasoning structure.")
-        with st.expander("See the reasoning structure"):
-            st.info(reasoning_structure)
+        step3.info("# Step 3: IMPLEMENT the adapted reasoning modules into an actionable reasoning structure. \n \n " + reasoning_structure)
         
         prompt = execute_reasoning_structure(reasoning_structure, task)
         result = groq_chat(reasoning_model, prompt)
-        st.subheader("Step 4: Execute the reasoning structure to solve a specific task instance.")
-        with st.expander("See the result"):
-            st.info(result)
+        step4.info("# Step 4: Execute the reasoning structure to solve a specific task instance. \n \n " + result)
