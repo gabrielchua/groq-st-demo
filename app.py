@@ -74,12 +74,13 @@ Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singa
     task = st.text_input("What is your task?")
     reasoning_model = st.radio("Select your LLM for this reasoning task", model_list, horizontal=True, help="mixtral is recommended for better performance, but appears to be slower")
 
+    button = st.empty()
     step4 = st.empty()
     step3 = st.empty() 
     step2 = st.empty()
     step1 = st.empty()
 
-    if st.button("Run"):
+    if button.button("Run"):
 
         prompt = select_reasoning_modules(REASONING_MODULES, task)
         select_reasoning_modules = ""
