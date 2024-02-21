@@ -80,8 +80,8 @@ with tab1:
 with tab2:
     st.info("""['Self-Discover: Large Language Models Self-Compose Reasoning Structures'](https://arxiv.org/abs/2402.03620) - Zhou et al (2024)
     
-    This is based on MrCatID's [implementation](https://github.com/catid/self-discover/blob/main/self_discover.py). 
-    Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singapore](https://www.meetup.com/machine-learning-singapore/)
+This is based on MrCatID's [implementation](https://github.com/catid/self-discover/blob/main/self_discover.py). 
+Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singapore](https://www.meetup.com/machine-learning-singapore/)
     """)
     task = st.text_input("What is your task?")
     reasoning_model = st.radio("Select your LLM for this reasoning task", model_list, horizontal=True, help="mixtral is recommended for better performance, but appears to be slower")
