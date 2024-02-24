@@ -1,1 +1,7 @@
-groq==0.4.0
+groq==0.4.1
+langchain==0.1.5
+langchain-community==0.0.17
+langchain-core==0.1.18
+langchain-groq==0.0.1
+langchainhub==0.1.14
+openai==1.12.0
