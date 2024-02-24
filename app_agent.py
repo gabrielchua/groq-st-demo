@@ -81,7 +81,6 @@ def append_to_sheet(prompt, generated, answer):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     worksheet.append_row([current_time, prompt, generated, answer])
 
-
 st.title("agents go brrrr with groq")
 st.subheader("ReAct Search Agent")
 st.write("powered by Groq, Mixtral, LangChain, and Tavily.")
