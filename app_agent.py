@@ -2,8 +2,12 @@
 Groq Agent
 """
 import time
+import json
+from datetime import datetime
 
+import gspread
 import streamlit as st
+from google.oauth2 import service_account
 from langchain import hub
 from langchain_groq import ChatGroq
 from langchain.agents import AgentExecutor, create_react_agent
@@ -63,19 +67,35 @@ def is_fake_question(text):
         return 0
     return 1
 
+def append_to_sheet(prompt, generated, answer):
+    """
+    Add to GSheet
+    """
+    credentials = service_account.Credentials.from_service_account_info(
+        json.loads(st.secrets["GCP_SERVICE_ACCOUNT"]),
+        scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+    )
+    gc = gspread.authorize(credentials)
+    sh = gc.open_by_url(st.secrets["PRIVATE_GSHEETS_URL"])
+    worksheet = sh.get_worksheet(0) # Assuming you want to write to the first sheet
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    worksheet.append_row([current_time, prompt, generated, answer])
 
-st.title("Agents go brrrr with groq")
-st.subheader("ReACT Search Agent")
-st.write("Powered by Groq, Mixtral, LangChain, and Tavily.")
 
+st.title("agents go brrrr with groq")
+st.subheader("ReAct Search Agent")
+st.write("powered by Groq, Mixtral, LangChain, and Tavily.")
 query = st.text_input("Search Query", "Why is Groq so fast?")
+button = st.empty()
 
-if st.button("Search"):
+if button.button("Search"):
+    button.empty()
     with st.spinner("Checking your response..."):
         is_nsfw = check_text(query)
         is_fake_qn = is_fake_question(query)
     if is_nsfw or is_fake_qn:
-        st.warning("Your query was flagged. Please try again.", icon="🚫")
+        st.warning("Your query was flagged. Please refresh the page to try again.", icon="🚫")
+        append_to_sheet(query, False, "NIL")
         st.stop()
     
     start_time = time.time()
@@ -83,9 +103,11 @@ if st.button("Search"):
     try:
         results = execute_search_agent(query)
     except ValueError:
-        st.error("An error occurred while processing your request. Please try again.")
+        st.error("An error occurred while processing your request. Please refresh the page to try again.")
         st.stop()
     st.success(f"Completed in {round(time.time() - start_time, 2)} seconds.")
     st.info(f""" ### QN: {results['input']}
 
 **ANS:** {results['output']}""")
+    append_to_sheet(results['input'], True, results['output'])
+    st.info("Please refresh the page to try a new query.")
