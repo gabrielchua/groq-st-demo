@@ -65,7 +65,7 @@ def is_fake_question(text):
 
 
 st.title("agents go brrrr with groq")
-st.subheader("ReACT Search Agent")
+st.subheader("ReAct Search Agent")
 st.write("Powered by Groq, Mixtral, LangChain, and Tavily.")
 
 query = st.text_input("Search Query", "Why is Groq so fast?")
