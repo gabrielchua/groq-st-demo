@@ -36,8 +36,9 @@ with tab1:
     system_prompt = st.text_input("System Prompt", "You are a friendly chatbot.")
     user_prompt = st.text_input("User Prompt", "Tell me a joke.")
 
-    model_list = client.models.list().data
-    model_list = [model.id for model in model_list]
+    # model_list = client.models.list().data
+    # model_list = [model.id for model in model_list]
+    model_list = ["llama2-70b-4096", "mixtral-8x7b-32768"]
 
     model = st.radio("Select the LLM", model_list, horizontal=True)
 
@@ -85,7 +86,7 @@ Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singa
         prompt = select_reasoning_modules(REASONING_MODULES, task)
         select_reasoning_modules = ""
         stream_1 = client.chat.completions.create(
-            model=model,
+            model=reasoning_model,
             messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
                     {"role": "user", "content": prompt}],
             stream=True
@@ -100,7 +101,7 @@ Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singa
 
         prompt = adapt_reasoning_modules(select_reasoning_modules, task)
         stream_2 = client.chat.completions.create(
-            model=model,
+            model=reasoning_model,
             messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
                     {"role": "user", "content": prompt}],
             stream=True
@@ -115,7 +116,7 @@ Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singa
 
         prompt = implement_reasoning_structure(adapted_modules, task)
         stream_3 = client.chat.completions.create(
-            model=model,
+            model=reasoning_model,
             messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
                     {"role": "user", "content": prompt}],
             stream=True
@@ -130,7 +131,7 @@ Credits to [Martin A](https://twitter.com/mdda123) for sharing this at [ML Singa
 
         prompt = execute_reasoning_structure(reasoning_structure, task)
         stream_4 = client.chat.completions.create(
-            model=model,
+            model=reasoning_model,
             messages=[{"role": "system", "content": "You are a world class expert in reasoning."},
                     {"role": "user", "content": prompt}],
             stream=True
