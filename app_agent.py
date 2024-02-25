@@ -91,8 +91,9 @@ if button.button("Search"):
     button.empty()
     with st.spinner("Checking your response..."):
         is_nsfw = check_text(query)
-        is_fake_qn = is_fake_question(query)
-    if is_nsfw or is_fake_qn:
+        # is_fake_qn = is_fake_question(query)
+    # if is_nsfw or is_fake_qn:
+    if is_nsfw:
         st.warning("Your query was flagged. Please refresh the page to try again.", icon="🚫")
         append_to_sheet(query, False, "NIL")
         st.stop()
